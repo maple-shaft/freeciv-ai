@@ -42,6 +42,7 @@
 #include "maple_ai_player.h"
 #include "maple_ai_settler.h"
 #include "maple_ai_unit.h"
+#include "maple_ai_military.h"
 
 #include "maple_ai_city.h"
 
@@ -215,11 +216,53 @@ static void mapleai_barbarian_choose_build(struct player *pplayer,
   if (bestunit) {
     choice->value.utype = bestunit;
     /* "Overriding military emergency" indicator */
-    choice->want   = DAI_WANT_MILITARY_EMERGENCY;
+    choice->want   = MAPLEAI_WANT_MILITARY_EMERGENCY;
     choice->type   = CT_ATTACKER;
     adv_choice_set_use(choice, "barbarian");
   } else {
     log_base(LOG_WANT, "Barbarians don't know what to build!");
+  }
+}
+
+/**********************************************************************//**
+  Consider overriding building target selected by common advisor code.
+**************************************************************************/
+void mapleai_build_adv_override(struct ai_type *ait, struct city *pcity,
+                            struct adv_choice *choice)
+{
+  const struct impr_type *chosen;
+  adv_want want;
+
+  if (choice->type == CT_NONE) {
+    want = 0;
+    chosen = nullptr;
+  } else {
+    want = choice->want;
+    chosen = choice->value.building;
+  }
+
+  improvement_iterate(pimprove) {
+    /* Advisor code did not consider wonders, let's do it here */
+    if (is_wonder(pimprove)) {
+      int id = improvement_index(pimprove);
+
+      if (pcity->server.adv->building_want[id] > want
+          && can_city_build_improvement_now(pcity, pimprove)) {
+        want = pcity->server.adv->building_want[id];
+        chosen = pimprove;
+      }
+    }
+  } improvement_iterate_end;
+
+  choice->want = want;
+  choice->value.building = chosen;
+
+  if (chosen) {
+    choice->type = CT_BUILDING; /* In case advisor had not chosen anything */
+
+    CITY_LOG(LOG_DEBUG, pcity, "AI wants to build %s with want "
+             ADV_WANT_PRINTF,
+             improvement_rule_name(chosen), want);
   }
 }
 
@@ -250,7 +293,7 @@ static void mapleai_city_choose_build(struct ai_type *ait,
   if (is_barbarian(pplayer)) {
     mapleai_barbarian_choose_build(pplayer, pcity, &(city_data->choice));
   } else {
-    if ((city_data->choice.want < mapleai_WANT_MILITARY_EMERGENCY
+    if ((city_data->choice.want < MAPLEAI_WANT_MILITARY_EMERGENCY
          || city_data->urgency == 0)
         && !(mapleai_on_war_footing(ait, pplayer) && city_data->choice.want > 0
              && pcity->id != adv->wonder_city)) {

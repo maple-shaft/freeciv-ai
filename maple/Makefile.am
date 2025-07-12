@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 -I$(FCSRCPATH)/utility \
 -I$(FCSRCPATH)/common \
 -I$(FCSRCPATH)/common/networking \
+-I$(FCSRCPATH)/common/aicore \
 -I$(FCSRCPATH)/ai \
 -I$(FCSRCPATH)/server \
 -I$(FCSRCPATH)/server/advisors \

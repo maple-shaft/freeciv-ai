@@ -21,6 +21,9 @@ struct adv_risk_cost;
 #define DAI_WANT_MILITARY_EMERGENCY  (DAI_WANT_BELOW_MIL_EMERGENCY + 0.1)
 #define DAI_WANT_DOMESTIC_MAX (DAI_WANT_MILITARY_EMERGENCY / 4 * 3)
 
+void mapleai_build_adv_override(struct ai_type *ait, struct city *pcity,
+                            struct adv_choice *choice);
+
 const char *mapleai_unit_task_rule_name(const enum ai_unit_task task);
 
 adv_want military_amortize(struct player *pplayer, struct city *pcity,
@@ -55,7 +58,8 @@ bool mapleai_unit_make_homecity(struct unit *punit, struct city *pcity);
 bool mapleai_unit_attack(struct ai_type *ait, struct unit *punit,
                      struct tile *ptile);
 bool mapleai_unit_move(struct ai_type *ait, struct unit *punit, struct tile *ptile);
-
+void mapleai_unit_move_or_attack(struct ai_type *ait, struct unit *punit,
+                             struct tile *ptile, struct pf_path *path, int step);
 void mapleai_government_change(struct player *pplayer, struct government *gov);
 int mapleai_gold_reserve(struct player *pplayer);
 

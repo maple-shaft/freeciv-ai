@@ -22,11 +22,11 @@ AM_INIT_AUTOMAKE
 AC_ARG_WITH([freecivbld],
   AS_HELP_STRING([--with-freecivbdl], [path to freeciv build tree]),
             [FCBLDPATH=$withval],
-            [FCBLDPATH=".."])
+            [FCBLDPATH="/home/dustin/git3/freeciv/build"])
 AC_ARG_WITH([freecivsrc],
   AS_HELP_STRING([--with-freecivsrc], [patch to freeciv source tree]),
             [FCSRCPATH=$withval],
-            [FCSRCPATH="$FCBLDPATH"])
+            [FCSRCPATH="/home/dustin/git3/freeciv"])
 
 AC_SUBST([FCBLDPATH])
 AC_SUBST([FCSRCPATH])

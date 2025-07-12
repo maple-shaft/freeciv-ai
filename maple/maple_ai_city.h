@@ -57,6 +57,10 @@ struct ai_city {
   struct unit_type *worker_type;
 };
 
+#define MAPLEAI_WANT_BELOW_MIL_EMERGENCY (1000.0)
+#define MAPLEAI_WANT_MILITARY_EMERGENCY  (MAPLEAI_WANT_BELOW_MIL_EMERGENCY + 0.1)
+#define MAPLEAI_WANT_DOMESTIC_MAX (MAPLEAI_WANT_MILITARY_EMERGENCY / 4 * 3)
+
 void mapleai_manage_cities(struct ai_type *ait, struct player *pplayer);
 
 void mapleai_city_alloc(struct ai_type *ait, struct city *pcity);
@@ -86,6 +90,9 @@ void dont_want_tech_obsoleting_impr(struct ai_type *ait,
 void mapleai_build_adv_init(struct ai_type *ait, struct player *pplayer);
 void mapleai_build_adv_adjust(struct ai_type *ait, struct player *pplayer,
                           struct city *wonder_city);
+
+void mapleai_build_adv_override(struct ai_type *ait, struct city *pcity,
+                            struct adv_choice *choice);
 
 void mapleai_consider_wonder_city(struct ai_type *ait, struct city *pcity, bool *result);
 
