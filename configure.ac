@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([maple], [0.0.0])
+AC_INIT([FREECIVAI], [0.0.0])
 AC_CONFIG_SRCDIR([maple/ai_stub.c])
 AC_CONFIG_HEADERS([maple/ai_stub.h])
 
@@ -12,6 +12,9 @@ LT_INIT([shared])
 AM_INIT_AUTOMAKE
 
 # Checks for libraries.
+
+PKG_CHECK_MODULES([CURL], [libcurl])
+PKG_CHECK_MODULES([JANSSON], [jansson])
 
 # Checks for header files.
 

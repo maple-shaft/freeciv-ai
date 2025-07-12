@@ -15,8 +15,8 @@ AM_CPPFLAGS = \
 -I$(FCSRCPATH)/ai/default
 
 fc_ai_maple_la_SOURCES = \
-ai_stub.h \
-ai_stub.c 
+*.h \
+*.c 
 
 fc_ai_maple_la_LDFLAGS = -module
 fc_ai_maple_la_LIBADD = -lm
