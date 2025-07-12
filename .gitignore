@@ -1,0 +1,75 @@
+# Autoconf
+*.in
+configure
+stamp-*
+*.m4
+*.guess
+*.sub
+config.status
+*.log
+depcomp
+install-sh
+libtool
+ltmain.sh
+.deps/
+.libs/
+autom4te.cache/
+Makefile
+missing
+compile
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (including Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# IDE/Editor related files (common examples)
+.vscode/
+.idea/
+*.swp
+*~
