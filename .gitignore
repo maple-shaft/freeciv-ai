@@ -73,3 +73,6 @@ dkms.conf
 .idea/
 *.swp
 *~
+
+# Python
+.venv/

@@ -1,5 +1,5 @@
-/* maple/ai_stub.h.  Generated from ai_stub.h.in by configure.  */
-/* maple/ai_stub.h.in.  Generated from configure.ac by autoheader.  */
+/* ai_stub.h.  Generated from ai_stub.h.in by configure.  */
+/* ai_stub.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
@@ -41,10 +41,10 @@
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "FREECIVAI"
+#define PACKAGE_NAME "freecivai"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "FREECIVAI 0.0.0"
+#define PACKAGE_STRING "freecivai 0.0.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "freecivai"

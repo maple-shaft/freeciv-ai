@@ -39,7 +39,7 @@ int main(void) {
     curl = curl_easy_init();
 
     if (curl) {
-        const char *json_data = "{\"model\":\"qwen:8b\",\"prompt\":\"What is the capital of France?\",\"stream\":false}";
+        const char *json_data = "{\"model\":\"qwen3:8b\",\"prompt\":\"What is the capital of France?\",\"stream\":false}";
 
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -54,18 +54,26 @@ int main(void) {
         if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         } else {
+            printf("The curl result code is %d", res);
+            printf("Received %zu bytes of data:\n", chunk.size);
+            printf("%s\n", chunk.memory);
             json_error_t error;
             json_t *root = json_loads(chunk.memory, 0, &error);
-            if (root) {
-                json_t *response = json_object_get(root, "response");
-                if (json_is_string(response)) {
-                    printf("LLM Output: %s\n", json_string_value(response));
-                } else {
-                    printf("Response field not found or not a string.\n");
-                }
-                json_decref(root);
+            if (!root) {
+                printf("I think I found an error! \n %s", error.text);
             } else {
-                fprintf(stderr, "JSON parse error: %s\n", error.text);
+                printf("No error, lets see what the response actually says.");
+                json_t *model = json_object_get(root, "model");
+                json_t *created_at = json_object_get(root, "created_at");
+                json_t *response = json_object_get(root, "response");
+                
+                printf("LLM Output - Model: %s\n", json_string_value(model));
+                printf("LLM Output - Created At: %s\n", json_string_value(created_at));
+                printf("LLM Output - Response: %s\n", json_string_value(response));
+                //} else 
+                //    printf("Response field not found or not a string.\n");
+                //}
+                json_decref(root);
             }
         }
 

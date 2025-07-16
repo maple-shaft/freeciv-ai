@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([FREECIVAI], [0.0.0])
-AC_CONFIG_SRCDIR([maple/ai_stub.c])
-AC_CONFIG_HEADERS([maple/ai_stub.h])
+AC_INIT([freecivai], [0.0.0])
+AC_CONFIG_SRCDIR([ai_stub.c])
+AC_CONFIG_HEADERS([ai_stub.h])
 
 # Checks for programs.
 AC_PROG_CC
@@ -43,5 +43,5 @@ AC_SUBST([aimoduledir])
 
 AC_CONFIG_FILES([
         Makefile
-        maple/Makefile])
+])
 AC_OUTPUT

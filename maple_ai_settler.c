@@ -99,13 +99,6 @@
  * This is % of defense % to increase want by. */
 #define DEFENSE_EMPHASIS 20
 
-/* struct tdcache_hash. */
-#define SPECHASH_TAG tile_data_cache
-#define SPECHASH_INT_KEY_TYPE
-#define SPECHASH_IDATA_TYPE struct tile_data_cache *
-#define SPECHASH_IDATA_FREE tile_data_cache_destroy
-#include "spechash.h"
-
 enum cb_error_level { CBE_OK, CBE_RECOVERABLE, CBE_FATAL };
 
 static void tile_data_cache_destroy(struct tile_data_cache *ptdc);

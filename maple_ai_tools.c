@@ -1352,48 +1352,6 @@ bool mapleai_choose_role_unit(struct ai_type *ait, struct player *pplayer,
 }
 
 /**********************************************************************//**
-  Consider overriding building target selected by common advisor code.
-**************************************************************************/
-void mapleai_build_adv_override(struct ai_type *ait, struct city *pcity,
-                            struct adv_choice *choice)
-{
-  const struct impr_type *chosen;
-  adv_want want;
-
-  if (choice->type == CT_NONE) {
-    want = 0;
-    chosen = nullptr;
-  } else {
-    want = choice->want;
-    chosen = choice->value.building;
-  }
-
-  improvement_iterate(pimprove) {
-    /* Advisor code did not consider wonders, let's do it here */
-    if (is_wonder(pimprove)) {
-      int id = improvement_index(pimprove);
-
-      if (pcity->server.adv->building_want[id] > want
-          && can_city_build_improvement_now(pcity, pimprove)) {
-        want = pcity->server.adv->building_want[id];
-        chosen = pimprove;
-      }
-    }
-  } improvement_iterate_end;
-
-  choice->want = want;
-  choice->value.building = chosen;
-
-  if (chosen) {
-    choice->type = CT_BUILDING; /* In case advisor had not chosen anything */
-
-    CITY_LOG(LOG_DEBUG, pcity, "AI wants to build %s with want "
-             ADV_WANT_PRINTF,
-             improvement_rule_name(chosen), want);
-  }
-}
-
-/**********************************************************************//**
   "The following evaluates the unhappiness caused by military units
   in the field (or aggressive) at a city when at Republic or
   Democracy.
