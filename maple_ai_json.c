@@ -1,5 +1,8 @@
 #include "maple_ai_json.h"
 
+#include "terrain.h"
+#include "common.h"
+
 /*
 struct extra_type
 {
@@ -204,6 +207,10 @@ json_t *convert_terrain(const struct terrain *t) {
     if (!obj) {
         return NULL;
     }
+
+    struct terrain *te = terrain_by_identifier(t->identifier)
+    char *translated_name = t->name
+
     json_obj_set_new(obj, "item_number", json_integer(t->item_number));
     json_obj_set_new(obj, "tclass", json_string(t->tclass));
     json_obj_set_new(obj, "movement_cost", json_integer(t->movement_cost));

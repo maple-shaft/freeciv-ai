@@ -1,5 +1,6 @@
 #include "fc_types.h"
 #include "name_translation.h"
+#include "specialist.h"
 #include "tile.h"
 #include "traderoutes.h"
 #include "workertask.h"
@@ -9,6 +10,8 @@
 #include "road.h"
 #include "terrain.h"
 #include "unitlist.h"
+#include "world_object.h"
+#include "advdata.h"
 #include <jansson.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,26 +22,131 @@ void serialize_string(const char *str, json_t *obj, const char *key) {
     json_object_set_new(obj, key, json_string(strdup(str)));
 }
 
+// Helper function to serialize an int
+void serialize_int(int int_val, json_t *obj, const char *key) {
+    json_object_set_new(obj, key, json_integer(int_val));
+}
+
 // Helper function to serialize a bitvector (convert to integer)
 //void serialize_bitvector(bv_unit_type_flags flags, json_t *obj, const char *key) {
 //    json_object_set_new(obj, key, ((long)flags));
 //}
 
+////// Advisor Translation Stuff
+
+json_t *serialize_adv_data(const struct adv_data *adv_data) {
+    if (!adv_data) return JSON_NULL;
+    json_t *ret = json_object();
+
+    serialize_int(&adv_data->angry_priority, ret, "angry_priority");
+    serialize_int(&adv_data->food_priority, ret, "food_priority");
+    serialize_int(&adv_data->gold_priority, ret, "gold_priority");
+    serialize_int(&adv_data->happy_priority, ret, "happy_priority");
+    serialize_int(&adv_data->infra_priority, ret, "infra_priority");
+    serialize_int(&adv_data->luxury_priority, ret, "luxury_priority");
+    serialize_int(&adv_data->num_continents, ret, "num_continents");
+    serialize_int(&adv_data->num_oceans, ret, "num_oceans");
+    serialize_int(&adv_data->pollution_priority, ret, "pollution_priority");
+    serialize_int(&adv_data->science_priority, ret, "science_priority");
+    serialize_int(&adv_data->shield_priority, ret, "shield_priority");
+    serialize_int(&adv_data->unhappy_priority, ret, "unhappy_priority");
+    serialize_int(&adv_data->wonder_city, ret, "wonder_city");
+
+    json_object_set(ret, "celebrate", json_boolean(&adv_data->celebrate));
+    json_object_set(ret, "wants_science", json_boolean(&adv_data->wants_science));
+
+    //TODO: Other fields...
+    return ret;
+}
+
+////// End Advisor Translation Stuff
+
+
+////// Unit Translation Stuff
 
 // Helper function to serialize a struct specialist
-json_t *serialize_specialist(const struct specialist *spec_type, json_t *obj) {
-    if (!spec_type) return NULL;
+json_t *serialize_specialist(const struct specialist *spec_type) {
+    if (!spec_type) return JSON_NULL;
 
     json_t *spec_obj = json_object();
+    char *name_str = name_translation_get(&spec_type->name);
 
     // Serialize specialist fields (assuming fields like name, cost, etc.)
-    serialize_string(spec_type->name, spec_obj, "name");
-    json_object_set_new(spec_obj, "cost", json_integer((long)spec_type->cost);
-
-    // Add to main object
-    json_object_set(obj, "spec_type", spec_obj);
+    serialize_string(name_str, spec_obj, "name");
+    serialize_int(spec_type->item_number, spec_obj, "item_number");
+    // Other fields...
     return spec_obj;
 }
+
+json_t *serialize_unit_type(const struct unit_type *unit_type) {
+    if (!unit_type) return NULL;
+
+    json_t *ret_obj =  json_object();
+    serialize_int(&unit_type->item_number, ret_obj, "item_number");
+    serialize_int(&unit_type->attack_strength, ret_obj, "attack_strength");
+    serialize_int(&unit_type->build_cost, ret_obj, "build_cost");
+    serialize_int(&unit_type->bombard_rate, ret_obj, "bombard_rate");
+    serialize_int(&unit_type->city_size, ret_obj, "city_size");
+    serialize_int(&unit_type->city_slots, ret_obj, "city_slots");
+    serialize_int(&unit_type->convert_time, ret_obj, "convert_time");
+    serialize_int(&unit_type->defense_strength, ret_obj, "defense_strength");
+    serialize_int(&unit_type->firepower, ret_obj, "firepower");
+    serialize_int(&unit_type->fuel, ret_obj, "fuel");
+    serialize_int(&unit_type->happy_cost, ret_obj, "happy_cost");
+    serialize_int(&unit_type->hp, ret_obj, "hp");
+    serialize_int(&unit_type->move_rate, ret_obj, "move_rate");
+    serialize_int(&unit_type->paratroopers_range, ret_obj, "paratroopers_range");
+    serialize_int(&unit_type->pop_cost, ret_obj, "pop_cost");
+    serialize_int(&unit_type->transport_capacity, ret_obj, "transport_capacity");
+    serialize_int(&unit_type->unknown_move_cost, ret_obj, "unknown_move_cost");
+    serialize_int(&unit_type->upkeep, ret_obj, "upkeep");
+    serialize_int(&unit_type->vision_radius_sq, ret_obj, "vision_radius_sq");
+    
+    char *name_str = name_translation_get(&unit_type->name);
+    if (name_str)
+    {
+        serialize_string(&name_str, ret_obj, "name");
+    }
+    
+    json_t * specialist = serialize_specialist(&unit_type->spec_type);
+    if (specialist)
+    {
+        json_object_set(ret_obj, "spec_type", &specialist);
+    }
+
+    json_t *converted_to = serialize_unit_type(&unit_type->converted_to);
+    if (converted_to)
+    {
+        json_object_set(ret_obj, "converted_to", &converted_to);
+    }
+
+    json_t *obsoleted_by = serialize_unit_type(&unit_type->obsoleted_by);
+    if (obsoleted_by)
+    {
+        json_object_set(ret_obj, "obsoleted_by", &obsoleted_by);
+    }
+
+    
+    //TODO other fields
+
+    return ret_obj;
+}
+
+////// End Unit Translation Stuff
+
+////// World Translation Stuff
+
+json_t *serialize_world(const struct world *world) {
+    if (!world) return NULL;
+    json_t *ret_obj = json_object();
+    
+    //TODO: Add world serialization
+    return ret_obj;
+}
+
+////// End World Translation Stuff
+
+
 
 // Helper function to serialize a struct requirement_vector
 json_t *serialize_requirement_vector(const struct requirement_vector *build_reqs, json_t *obj) {
@@ -85,49 +193,15 @@ json_t *serialize_unit_class(const struct unit_class *uclass, json_t *obj) {
     json_t *uclass_obj = json_object();
 
     // Serialize unit_class fields (assuming fields like name, etc.)
-    serialize_string(uclass->name, uclass_obj, "name");
+    serialize_string(&uclass->name, uclass_obj, "name");
 
     // Add to main object
     json_object_set(obj, "uclass", uclass_obj);
     return uclass_obj;
 }
 
-// Helper function to serialize a struct strvec
-// (Commented out: unknown struct type)
-// json_t *serialize_strvec(const struct strvec *helptext, json_t *obj) {
-//     if (!helptext) return NULL;
-//
-//     json_t *helptext_obj = json_object();
-//
-//     // Serialize strvec fields (assuming fields like strings, etc.)
-//     // json_t *string_list = json_array();
-//     // for (int i = 0; i < helptext->num_strings; i++) {
-//     //     json_array_append_new(string_list, json_string(helptext->strings[i]));
-//     // }
-//     // json_object_set_new(helptext_obj, "strings", string_list);
-//
-//     // Add to main object
-//     json_object_set(obj, "helptext", helptext_obj);
-//     return helptext_obj;
-// }
-
-// Helper function to serialize a struct veteran_system
-// (Commented out: unknown struct type)
-// json_t *serialize_veteran_system(const struct veteran_system *veteran, json_t *obj) {
-//     if (!veteran) return NULL;
-//
-//     json_t *veteran_obj = json_object();
-//
-//     // Serialize veteran_system fields (assuming fields like level, etc.)
-//     // json_object_set_new(veteran_obj, "level", json_integer((long)veteran->level);
-//
-//     // Add to main object
-//     json_object_set(obj, "veteran", veteran_obj);
-//     return veteran_obj;
-// }
-
 // Main serialization function for unit_type
-json_t *serialize_unit_type(const struct unit_type *unit) {
+json_t *serialize_unit_type_two(const struct unit_type *unit) {
     if (!unit) return NULL;
 
     json_t *unit_obj = json_object();
@@ -137,7 +211,7 @@ json_t *serialize_unit_type(const struct unit_type *unit) {
     //serialize_string(unit->name, unit_obj, "name");
     json_object_set_new(unit_obj, "build_cost", json_integer((long)unit->build_cost));
     json_object_set_new(unit_obj, "pop_cost", json_integer((long)unit->pop_cost));
-    json_object_set, "spec_type", serialize_specialist(unit->spec_type, unit_obj);
+    json_object_set, "spec_type", serialize_specialist(unit->spec_type);
     json_object_set_new(unit_obj, "attack_strength", json_integer((long)unit->attack_strength));
     json_object_set_new(unit_obj, "defense_strength", json_integer((long)unit->defense_strength));
     json_object_set_new(unit_obj, "move_rate", json_integer((long)unit->move_rate));
