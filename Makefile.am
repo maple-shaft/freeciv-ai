@@ -33,6 +33,7 @@ maple_ai_tech.h \
 maple_ai_tools.h \
 maple_ai_unit.h \
 ai_stub.h \
+serialize.h \
 maple_ai_city.c \
 maple_ai_data.c \
 maple_ai_diplomacy.c \
@@ -45,10 +46,24 @@ maple_ai_settler.c \
 maple_ai_tech.c \
 maple_ai_tools.c \
 maple_ai_unit.c \
-ai_stub.c
+ai_stub.c \
+serialize.c
 
-noinst_PROGRAMS = main
-main_SOURCES = main.c
-main_CPPFLAGS = fc_ai_maple_la_CPPFLAGS
-main_LDADD = fc_ai_maple.la $(CURL_LIBS) $(JANSSON_LIBS) -lm
+noinst_PROGRAMS = test_maple_ai
+
+test_maple_ai_SOURCES = \
+tests/unity.c \
+tests/test_serialize.c \
+serialize.h \
+serialize.c
+
+test_maple_ai_CPPFLAGS = \
+-Itests \
+$(COMMON_CPPFLAGS)
+
+test_maple_ai_LDADD = \
+$(FCBLDPATH)/common/libfreeciv.la \
+$(FCBLDPATH)/dependencies/cvercmp/libcvercmp.la \
+fc_ai_maple.la \
+$(CURL_LIBS) $(JANSSON_LIBS) -licuuc -licudata -llzma -L/usr/lib -lsqlite3 -lm -lz
 
