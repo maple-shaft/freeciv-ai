@@ -50,7 +50,14 @@ void serialize_name(const struct name_translation *val, json_t *obj, const char 
 ////// Player Translation Stuff
 
 json_t *serialize_player(const struct player *player) {
+    if (!player) return json_null();
+    json_t *ret = json_object();
 
+    //player->ai_common // struct player_ai... what is this?
+    json_object_set(ret, "cities", serialize_city_list(player->cities));
+
+    //TODO: Other Player Fields
+    return ret;
 }
 
 ////// End Player Translation Stuff
@@ -154,7 +161,185 @@ json_t *serialize_adv_data(const struct adv_data *adv_data) {
 
 ////// End Advisor Translation Stuff
 
+////// City Translation Stuff
+
+json_t *serialize_goods_type(const struct goods_type *goods_type) {
+    if (!goods_type) return json_null();
+
+    json_t *ret = json_object();
+    serialize_name(&(goods_type->name), ret, "name");
+    return ret;
+}
+
+json_t *serialize_trade_route(const struct trade_route *trade_route) {
+    if (!trade_route) return json_null();
+    json_t *ret = json_object();
+    //trade_route_na
+    serialize_int(trade_route->partner, ret, "partner");
+    serialize_int(trade_route->value, ret, "value");
+
+    serialize_string(route_direction_name(trade_route->dir), ret, "dir");
+    json_object_set(ret, "goods", serialize_goods_type(trade_route->goods));
+    return ret;
+}
+
+json_t *serialize_trade_route_list(const struct trade_route_list *trl) {
+    if (!trl) return json_null();
+    json_t *ret = json_array();
+    
+    struct trade_route *ptraderoute;
+    trade_route_list_iterate(trl, ptraderoute) {
+        json_array_append(ret, serialize_trade_route(ptraderoute));
+    } trade_route_list_iterate_end;
+    return ret;
+}
+
+json_t *serialize_tile(const struct tile *tile) {
+    if (!tile) return json_null();
+    json_t *ret = json_object();
+    
+    // Integers
+    serialize_int(tile->altitude, ret, "altitude");
+    serialize_int(tile->continent, ret, "continent");
+    serialize_int(tile->index, ret, "index");
+    serialize_int(tile->infra_turns, ret, "infra_turns");
+    
+    if (tile->owner) {
+        serialize_string(tile->owner->name, ret, "owner_PLAYER_name");
+    }
+    if (tile->worked) {
+        serialize_string(tile->worked->name, ret, "worked_CITY_name");
+    }
+    if (tile->terrain) {
+        serialize_name(&(tile->terrain->name), ret, "terrain_TERRAIN_name");
+    }
+    
+    //TODO: Unit list?
+    return ret;
+}
+
+json_t *serialize_city(const struct city *city) {
+    if (!city) return json_null();
+    json_t *ret = json_object();
+
+    //TODO add city attributes
+    // Arrays
+    json_t *abs_bonus = json_array();
+    for (int i = 0; i < ARRAY_SIZE(city->abs_bonus); i++)
+    {
+        json_array_append(abs_bonus, json_integer(city->abs_bonus[i]));
+    }
+    json_object_set(ret, "abs_bonus", abs_bonus);
+
+
+    json_t *citizen_base = json_array();
+    for (int i = 0; i < ARRAY_SIZE(city->citizen_base); i++)
+    {
+        json_array_append(citizen_base, json_integer(city->citizen_base[i]));
+    }
+    json_object_set(ret, "citizen_base", citizen_base);
+
+    // Enums
+    serialize_string(city_acquire_type_name(city->acquire_t), ret, "acquire_t");
+    serialize_string(capital_type_name(city->capital), ret, "capital");
+    
+    // Inner Structs
+    json_t *client = json_object();
+    json_object_set(ret, "client", client);
+    serialize_int(city->client.buy_cost, client, "buy_cost");
+    serialize_int(city->client.culture, client, "culture");
+    serialize_int(city->client.walls, client, "walls");
+    serialize_bool(city->client.happy, client, "happy");
+    serialize_bool(city->client.occupied, client, "occupied");
+    serialize_bool(city->client.unhappy, client, "unhappy");
+
+    // Strings
+    serialize_string(city->name, ret, "name");
+    serialize_string(city->original->name, ret, "original_PLAYER_name");
+    serialize_string(city->owner->name, ret, "owner_PLAYER_name");
+    
+    // Integers
+    serialize_int(city->airlift, ret, "airlift");
+    serialize_int(city->anarchy, ret, "anarchy");
+    serialize_int(city->before_change_shields, ret, "before_change_shields");
+    //city->bonus[6]
+    serialize_int(city->caravan_shields, ret, "caravan_shields");
+    serialize_int(city->city_radius_sq, ret, "city_radius_sq");
+    //city->counter_values
+    serialize_int(city->disbanded_shields, ret, "disbanded_shields");
+    serialize_int(city->food_stock, ret, "food_stock");
+    serialize_int(city->history, ret, "history");
+    serialize_int(city->id, ret, "id");
+    serialize_int(city->illness_trade, ret, "illness_trade");
+    serialize_int(city->last_turns_shield_surplus, ret, "last_turns_shield_surplus");
+    serialize_int(city->pollution, ret, "pollution");
+    serialize_int(city->rapture, ret, "rapture");
+    serialize_int(city->shield_stock, ret, "shield_stock");
+    serialize_int(city->size, ret, "size");
+    serialize_int(city->steal, ret, "steal");
+    serialize_int(city->turn_founded, ret, "turn_founded");
+    serialize_int(city->turn_last_built, ret, "turn_last_built");
+    serialize_int(city->turn_plague, ret, "turn_plague");
+
+    // Bools
+    serialize_bool(city->did_buy, ret, "did_buy");
+    serialize_bool(city->did_sell, ret, "did_sell");
+    serialize_bool(city->was_happy, ret, "was_happy");
+    serialize_bool(city->had_famine, ret, "had_famine");
+
+    // Other structs
+    json_object_set(ret, "cm_parameter", serialize_cm_parameter(city->cm_parameter));
+    json_object_set(ret, "routes", serialize_trade_route_list(city->routes));
+    // ??? city->task_reqs
+    json_object_set(ret, "tile", serialize_tile(city->tile));
+    //city->units_supported
+
+    return ret;
+}
+
+json_t *serialize_city_list(const struct city_list *city_list) {
+    if (!city_list) return json_null();
+    json_t *ret = json_array();
+    
+    struct city *pcity;
+    city_list_iterate(city_list, pcity) {
+        json_array_append(ret, serialize_city(pcity));
+    } city_list_iterate_end;
+    return ret;
+}
+
+////// End City Translation Stuff
+
 ////// Unit Translation Stuff
+
+json_t *serialize_unit(const struct unit *unit) {
+    if (!unit) return json_null();
+
+    json_t *ret = json_object();
+    serialize_string(gen_action_name(unit->action), ret, "action");
+
+    if (unit->action_decision_tile) {
+        serialize_int(unit->action_decision_tile->index, ret, "action_decision_tile_TILE_index");
+    }
+    if (unit->carrying) {
+        json_object_set(ret, "carrying", serialize_goods_type(&(unit->carrying)));
+    }
+    serialize_string(action_decision_name(unit->action_decision_want), ret, "action_decision_want");
+    serialize_string(unit_activity_name(unit->activity), ret, "activity");
+    serialize_int(unit->battlegroup, ret, "battlegroup");
+    serialize_int(unit->current_form_turn, ret, "current_form_turn");
+    serialize_int(unit->fuel, ret, "fuel");
+    
+
+    return ret;
+}
+
+json_t *serialize_unit_list(const struct unit_list *unit_list) {
+    if (!unit_list) return json_null();
+    json_t *ret = json_array();
+
+    return ret;
+}
 
 // Helper function to serialize a struct specialist
 json_t *serialize_specialist(const struct specialist *spec_type) {
