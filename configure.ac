@@ -3,13 +3,14 @@
 
 AC_PREREQ([2.71])
 AC_INIT([freecivai], [0.0.0])
+AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_SRCDIR([ai_stub.c])
 AC_CONFIG_HEADERS([ai_stub.h])
 
 # Checks for programs.
 AC_PROG_CC
 LT_INIT([shared])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 
 # Checks for libraries.
 

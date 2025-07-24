@@ -1,3 +1,6 @@
+#ifndef SERIALIZE_H
+#define SERIALIZE_H
+
 #include "fc_types.h"
 #include "name_translation.h"
 #include "specialist.h"
@@ -13,6 +16,7 @@
 #include "world_object.h"
 #include "advdata.h"
 #include "cm.h"
+#include "maple_ai_data.h"
 #include <jansson.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,12 +26,16 @@ void serialize_string(const char *str, json_t *obj, const char *key);
 
 // Helper function to serialize an int
 void serialize_int(int int_val, json_t *obj, const char *key);
-
+void serialize_float(float val, json_t *obj, const char *key);
 // Helper function to serialize a struct name_translation
 void serialize_name(const struct name_translation *val, json_t *obj, const char *key);
 
 // Helper function to serialize a bool
 void serialize_bool(bool val, json_t *obj, const char *key);
+
+////// ai_plr Translation Stuff
+
+json_t *serialize_ai_plr(const struct ai_plr *data);
 
 ////// CM Translation Stuff
 
@@ -63,3 +71,5 @@ json_t *serialize_combat_bonus_list(const struct combat_bonus_list *bonuses, jso
 
 // Helper function to serialize a struct unit_class
 json_t *serialize_unit_class(const struct unit_class *uclass, json_t *obj);
+
+#endif

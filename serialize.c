@@ -15,6 +15,8 @@
 #include "cm.h"
 #include "unittype.h"
 #include "diplhand.h"
+#include "maple_ai_data.h"
+#include "maple_ai_settler.h"
 #include <jansson.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +33,11 @@ void serialize_int(int int_val, json_t *obj, const char *key) {
     json_object_set_new(obj, key, json_integer(int_val));
 }
 
+// Helper function to serialize a float
+void serialize_float(float val, json_t *obj, const char *key) {
+    json_object_set_new(obj, key, json_real(val));
+}
+
 void serialize_bool(bool val, json_t *obj, const char *key) {
     json_object_set_new(obj, key, (val) ? json_true() : json_false());
 }
@@ -40,10 +47,49 @@ void serialize_name(const struct name_translation *val, json_t *obj, const char 
     json_object_set_new(obj, key, json_string(strdup(name_str)));
 }
 
-// Helper function to serialize a bitvector (convert to integer)
-//void serialize_bitvector(bv_unit_type_flags flags, json_t *obj, const char *key) {
-//    json_object_set_new(obj, key, ((long)flags));
-//}
+////// Player Translation Stuff
+
+json_t *serialize_player(const struct player *player) {
+
+}
+
+////// End Player Translation Stuff
+
+////// AI Player Translation Stuff
+
+json_t *serialize_ai_plr(const struct ai_plr *data) {
+    if (!data) return json_null();
+    json_t *ret = json_object();
+
+    serialize_int(data->last_num_continents, ret, "last_num_continents");
+    serialize_int(data->last_num_oceans, ret, "last_num_oceans");
+
+    // Stats
+    json_t *stats = json_object();
+    json_object_set(ret, "stats", stats);
+    serialize_int(data->stats.available_boats, stats, "available_boats");
+    serialize_int(data->stats.boats, stats, "boats");
+    serialize_int(data->stats.ocean_workers, stats, "ocean_workers");
+    serialize_int(data->stats.passengers, stats, "passengers");
+    serialize_int(data->stats.workers, stats, "workers");
+    
+    // Tech Wants
+    json_t *tech_want = json_array();
+    json_object_set(ret, "tech_want", tech_want);
+    for (int i = 0; i < ARRAY_SIZE(data->tech_want); i++)
+    {
+        json_array_append(tech_want, json_real(data->tech_want[i]));
+    }
+
+    // Diplomacy
+    json_t *diplomacy = json_object();
+    json_object_set(ret, "diplomacy", diplomacy);
+    serialize_string(data->diplomacy.war_target->name, diplomacy, "war_target");
+    
+    return ret;
+}
+
+////// End AI Player Translation Stuff
 
 ////// CM Translation Stuff
 
@@ -70,6 +116,13 @@ json_t *serialize_adv_area_info(const struct adv_area_info *aai) {
     serialize_int(aai->size, ret, "size");
     serialize_bool(aai->size, ret, "threat");
     return ret;
+}
+
+json_t *serialize_adv_want(const struct adv_want *adv_want) {
+    if (!adv_want) return json_null();
+    json_t *ret = json_object();
+
+    
 }
 
 json_t *serialize_adv_data(const struct adv_data *adv_data) {
