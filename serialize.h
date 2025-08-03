@@ -16,7 +16,6 @@
 #include "world_object.h"
 #include "advdata.h"
 #include "cm.h"
-#include "maple_ai_data.h"
 #include <jansson.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,9 +32,13 @@ void serialize_name(const struct name_translation *val, json_t *obj, const char 
 // Helper function to serialize a bool
 void serialize_bool(bool val, json_t *obj, const char *key);
 
-////// ai_plr Translation Stuff
+////// Player Translation Stuff
 
-json_t *serialize_ai_plr(const struct ai_plr *data);
+json_t *serialize_player_diplstate(const struct player_diplstate *player_diplstate);
+
+json_t *serialize_player(const struct player *player);
+
+////// End Player Translation Stuff
 
 ////// CM Translation Stuff
 
@@ -51,12 +54,28 @@ json_t *serialize_adv_data(const struct adv_data *adv_data);
 
 ////// End Advisor Translation Stuff
 
+////// City Translation Stuff
+
+json_t *serialize_goods_type(const struct goods_type *goods_type);
+json_t *serialize_trade_route(const struct trade_route *trade_route);
+json_t *serialize_trade_route_list(const struct trade_route_list *trl);
+json_t *serialize_tile(const struct tile *tile);
+json_t *serialize_city(const struct city *city);
+json_t *serialize_city_list(const struct city_list *city_list);
+
+////// End City Translation Stuff
+
 ////// Unit Translation Stuff
 
 // Helper function to serialize a struct specialist
 json_t *serialize_specialist(const struct specialist *spec_type);
-
 json_t *serialize_unit_type(const struct unit_type *unit_type);
+// Helper function to serialize a struct unit_class
+json_t *serialize_unit_class(const struct unit_class *uclass, json_t *obj);
+json_t *serialize_unit_orders(const struct unit_order *unit_order_list, size_t length);
+json_t *serialize_unit_order(const struct unit_order *unit_order);
+json_t *serialize_unit(const struct unit *unit);
+json_t *serialize_unit_list(const struct unit_list *unit_list);
 
 ////// End Unit Translation Stuff
 
@@ -68,8 +87,5 @@ json_t *serialize_world(const struct world *world);
 
 // Helper function to serialize a struct combat_bonus_list
 json_t *serialize_combat_bonus_list(const struct combat_bonus_list *bonuses, json_t *obj);
-
-// Helper function to serialize a struct unit_class
-json_t *serialize_unit_class(const struct unit_class *uclass, json_t *obj);
 
 #endif

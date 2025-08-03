@@ -32,7 +32,22 @@ char *generate(const json_t *data) {
     }
 
     json_t *agent_req = json_object();
+    json_object_set(agent_req, "generate", data);
 
+    json_t *response_json = invoke_agent(agent_req, IS_GENERATE);
+    json_decref(agent_req);
+    if (!response_json) {
+        return NULL;
+    }
+    json_t *result = json_object_get(response_json, "result");
+    if (!result) {
+        return NULL;
+    }
+    char *ret = json_string_value(result);
+    printf("LLM Output - Model: %s\n", ret);
+
+    json_decref(response_json);
+    return ret;
 }
 
 // Invokes the LLM to just chit-chat about Freeciv. This can probably be hooked into the player chat.

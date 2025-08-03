@@ -17,41 +17,21 @@ COMMON_CPPFLAGS = \
  $(CURL_CFLAGS) $(JANSSON_CFLAGS)
 
 AM_CPPFLAGS = $(COMMON_CPPFLAGS)
+fc_ai_maple_la_CFLAGS = $(CFLAGS)
 
-fc_ai_maple_la_LDFLAGS = -module
-fc_ai_maple_la_LIBADD = -lm $(CURL_LIBS) $(JANSSON_LIBS)
+fc_ai_maple_la_LDFLAGS = -module  
+fc_ai_maple_la_LIBADD = -licuuc -licudata -llzma -lsqlite3 -lm -lz \
+$(CURL_LIBS) $(JANSSON_LIBS) 
 
 fc_ai_maple_la_SOURCES = \
-maple_ai_city.h \
-maple_ai_data.h \
-maple_ai_diplomacy.h \
-maple_ai_domestic.h \
-maple_ai_effects.h \
-maple_ai_hand.h \
-maple_ai_military.h \
-maple_ai_player.h \
-maple_ai_settler.h \
-maple_ai_tech.h \
-maple_ai_tools.h \
-maple_ai_unit.h \
 ai_stub.h \
 serialize.h \
 agent.h \
-maple_ai_city.c \
-maple_ai_data.c \
-maple_ai_diplomacy.c \
-maple_ai_domestic.c \
-maple_ai_effects.c \
-maple_ai_hand.c \
-maple_ai_military.c \
-maple_ai_player.c \
-maple_ai_settler.c \
-maple_ai_tech.c \
-maple_ai_tools.c \
-maple_ai_unit.c \
 ai_stub.c \
 serialize.c \
 agent.c
+
+libdir = $(prefix)/lib/fcai
 
 noinst_PROGRAMS = test_maple_ai_serialize test_maple_ai_agent
 

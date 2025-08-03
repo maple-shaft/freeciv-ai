@@ -170,6 +170,7 @@ def get_pickle_texts() -> list[str]:
     with open("texts.pickle", "rb") as f:
         return pickle.load(f)
 
+# Helper function that should create a new pickle file with documents from the database
 def setup_db():
     texts : List[Document] | None = collection.get()["documents"]
     if texts is None:
